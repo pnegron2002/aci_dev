@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+#!/usr/bin/env python
+
+# list of packages that should be imported for this code to work
+import time
+import sys
+import cobra.mit.access
+import cobra.mit.session
+import cobra.mit.request
+import cobra.model.fv
+
+
+# log into an APIC and create a directory object
+ls = cobra.mit.session.LoginSession('http://192.168.10.1', 'admin', 'NXos12345')
+md = cobra.mit.access.MoDirectory(ls)
+md.login()
+
+# the top level object on which operations will be made
+# Replace the text below with the dn of your top object
+topMo = md.lookupByDn('uni')
+TENANT = raw_input('\nWhat is the name of the Tenant?: ')
+APP_PROFILE = raw_input('\nWhat is the name of the Application Profile?: ')
+EPG = raw_input('\nWhat is the name of the EPG?: ')
+PORT = raw_input('\nWhat is Port Number?: ')
+VLAN = raw_input('\nWhat is the Vlan?:')
+MODE = raw_input('\nWhat is the Mode?:')
+if MODE == 'trunk':
+    MODE = 'regular'
+fvTenant = cobra.model.fv.Tenant(topMo,name=TENANT)
+fvAp = cobra.model.fv.Ap(fvTenant, name=APP_PROFILE)
+fvAEPg = cobra.model.fv.AEPg(fvAp, name=EPG)
+#fvRsPathAtt = cobra.model.fv.RsPathAtt(fvAEPg, tDn='topology/pod-1/paths-102/pathep-[eth1/45]', mode='regular', encap='vlan-10')
+fvRsPathAtt = cobra.model.fv.RsPathAtt(fvAEPg, tDn='topology/pod-1/paths-101-102/pathep-[{}]'.format(PORT), instrImedcy='immediate', mode=MODE, encap='vlan-{}'.format(VLAN))
+
+# commit the generated code to APIC
+c = cobra.mit.request.ConfigRequest()
+c.addMo(fvTenant)
+md.commit(c)
+
+sys.exit('Completed')

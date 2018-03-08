@@ -28,3 +28,4 @@ auth_token = login_attributes['token']
 cookies = {}
 cookies['APIC-cookie'] = auth_token
 print(cookies)
+sys.exit()

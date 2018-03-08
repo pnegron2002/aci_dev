@@ -1,12 +1,13 @@
-# import the neccessary modules
 
+# import the neccessary modules
+import sys
 import requests
 import getpass
 import simplejson as json
 
 
 # setup the variables used in the script
-
+print(sys.version)
 
 def Login_ACI():
     ip = '192.168.10.1'

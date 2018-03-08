@@ -7,7 +7,6 @@ import simplejson as json
 
 
 # setup the variables used in the script
-print(sys.version)
 
 def Login_ACI():
     ip = '192.168.10.1'

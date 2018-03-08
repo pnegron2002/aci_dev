@@ -1,3 +1,4 @@
+#! /usr/bin/env /Users/pnegron/anaconda/envs/Python35/bin/python
 
 # import the neccessary modules
 import sys
@@ -5,7 +6,7 @@ import requests
 import getpass
 import simplejson as json
 
-
+print(sys.version)
 # setup the variables used in the script
 
 def Login_ACI():

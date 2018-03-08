@@ -1,31 +1,34 @@
-# import the neccessary modules
-import requests
+#import the neccessary modules
+
+import time
+import sys
 import getpass
-import simplejson as json
+import paramiko
 
-
-# setup the variables used in the script
-
-ip = '192.168.10.1'
-username = "admin"
+#setup the variables used in the script 
+ 
+ip = '10.10.10.1'
+username = "cisco"
 password = getpass.getpass()
 
-# Execute the main part of the code
+#Execute the main part of the code
+  
+remote_conn_pre = paramiko.SSHClient()  
+remote_conn_pre.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+remote_conn_pre.connect(ip, username=username, password=password)
+print "SSH connection established to 10.10.10.1"
+remote_conn = remote_conn_pre.invoke_shell()
+print "Interactive SSH session established"
+output = remote_conn.recv(1000)
+print output
+remote_conn.send("terminal length 0\n")
+remote_conn.send("enable\r")
+remote_conn.send("cisco\r")
+remote_conn.send("conf t\r")
+time.sleep(2)
+remote_conn.send("hostname R1\r")
+remote_conn.send("end\r")
+remote_conn.send("disable\r")
+remote_conn.close()
 
-login_url = 'https://{}/api/aaaLogin.json'.format(ip)
-name_pwd = {'aaaUser': {'attributes': {'name': username, 'pwd': password}}}
-json_credentials = json.dumps(name_pwd)
-
-# log in to API - Disable login warnings
-
-requests.packages.urllib3.disable_warnings()
-post_response = requests.post(login_url, data=json_credentials, verify=False)
-
-# extract token from login response structure
-auth = json.loads(post_response.text)
-login_attributes = auth['imdata'][0]['aaaLogin']['attributes']
-auth_token = login_attributes['token']
-cookies = {}
-cookies['APIC-cookie'] = auth_token
-print(cookies)
-sys.exit()
+sys.exit("ALL Done!")
